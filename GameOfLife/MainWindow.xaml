@@ -1,0 +1,147 @@
+﻿<Window x:Class="GameOfLife.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GameOfLife"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="500" Width="1000">
+    <Window.Resources>
+        <Style x:Key="DefaultStyle" TargetType="{x:Type Control}">
+            <Setter Property="Foreground" Value="DarkSlateGray" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontFamily" Value="Courier New" />
+            <Setter Property="FontStyle" Value="Normal" />
+        </Style>
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultStyle}">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="5" />
+                </Style>
+            </Style.Resources>
+        </Style>
+        <Style TargetType="Label" BasedOn="{StaticResource DefaultStyle}"/>
+        <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultStyle}">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="5" />
+                </Style>
+            </Style.Resources>
+        </Style>
+        <Style TargetType="TextBox" BasedOn="{StaticResource DefaultStyle}"/>
+      
+    </Window.Resources>
+
+    <Grid Margin="0,0,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="5*"/>
+        </Grid.ColumnDefinitions>
+        <Canvas Grid.Row="0" Name="BoardCanvas" MouseLeftButtonDown="ChangeCanvasState"  Height="400" Width="400" Margin="20,42,80,42"  />
+        <StackPanel Grid.Row="0" Orientation="Vertical" Grid.Column="1" Margin="20,20,20,0" >
+            <StackPanel Orientation="Horizontal">
+                <Label>Cell Shape</Label>
+                <ComboBox Name="InputCellShape" SelectionChanged="InputCellShape_SelectionChanged"/>
+                <Label>Cell Color</Label>
+                <ComboBox Name="InputCellColor" SelectionChanged="InputCellColor_SelectionChanged"/>
+                <Label>Background Color</Label>
+                <ComboBox Name="InputBgColor" SelectionChanged="InputBgColor_SelectionChanged"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label>Board Width:</Label>
+                <TextBox Name="InputBoardWidth" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="40" HorizontalContentAlignment="Center">1000</TextBox>
+                <Label>Board Height:</Label>
+                <TextBox Name="InputBoardHeight" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="40" HorizontalContentAlignment="Center">1000</TextBox>
+                <Label>Number of cells:</Label>
+                <TextBox Name="InputNumberOfCells" VerticalAlignment="Center" MinWidth="40" HorizontalAlignment="Center" HorizontalContentAlignment="Center">5000</TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <Label>Minimum Neighbours:</Label>
+                <TextBox Name="InputMinNeighbours" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="40" HorizontalContentAlignment="Center">2</TextBox>
+                <Label>Maximum Neighbours:</Label>
+                <TextBox Name="InputMaxNeighbours" VerticalAlignment="Center" HorizontalAlignment="Center" MinWidth="40" HorizontalContentAlignment="Center">3</TextBox>
+               
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Min cells to spawn:</Label>
+                <TextBox Name="InputMinNeighboursToSpawn" VerticalAlignment="Center" MinWidth="40" HorizontalContentAlignment="Center">3</TextBox>
+                <Label>Max cells to spawn:</Label>
+                <TextBox Name="InputMaxNeighboursToSpawn" VerticalAlignment="Center" MinWidth="40" HorizontalContentAlignment="Center">3</TextBox>
+            </StackPanel>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Name="BtnInit" Margin="2" Click="BtnInit_Click">Init</Button>
+                <Button Grid.Column="1" Name="BtnSave" Margin="2" Click="BtnSave_Click">Save</Button>
+                <Button Grid.Column="2" Name="BtnLoad" Margin="2,0,2,2" Height="20" VerticalAlignment="Bottom" Click="BtnLoad_Click">Load</Button>
+            </Grid>
+            <Label HorizontalAlignment="Center">Statistics</Label>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label>Generation:</Label>
+                <Label Name="DisplayGeneration" IsEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Center">0</Label>
+                <Label>Curently Alive:</Label>
+                <Label x:Name="DisplayAlive" IsEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Center">0</Label>
+                <Label>Total Births:</Label>
+                <Label x:Name="DisplayBirths" IsEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Center">0</Label>
+                <Label>Total Deaths:</Label>
+                <Label x:Name="DisplayDeaths" IsEnabled="False" HorizontalAlignment="Center" VerticalAlignment="Center">0</Label>
+
+
+            </StackPanel>
+
+
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button MinWidth="75" Name="BtnNextTurn" Padding="6,3" Margin="2" Click="BtnNextTurn_Click">Next turn</Button>
+                <Button  MinWidth="75" Name="BtnPlayPause" Padding="6,3" Margin="2" Click="BtnPlayPause_Click">Play</Button>
+                <Label>Speed:</Label>
+                <Button MinWidth="30" Padding="6,3" Margin="2" x:Name="BtnSpeedx1" Click="BtnSpeedx1_Click">>></Button>
+                <Button  MinWidth="30"  Padding="6,3" Margin="2" x:Name="BtnSpeedx2" Click="BtnSpeedx2_Click">>>></Button>
+            </StackPanel>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label>Zoom</Label>
+
+                <Slider Grid.Column="1" IsSnapToTickEnabled="True" Value="4" TickFrequency="1" x:Name="CellSizeSlider" Margin="5" Minimum="2" Maximum="50" VerticalAlignment="Center" ValueChanged="CellSizeSlider_ValueChanged" />
+                <Label Grid.Column="2" x:Name="CellSizeValue" Content="{Binding Value, ElementName=CellSizeSlider}" HorizontalContentAlignment="Right" HorizontalAlignment="Center"/>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label>X position</Label>
+                <Slider Grid.Column="1" IsSnapToTickEnabled="True" TickFrequency="1"  x:Name="SliderXPos" Margin="5" Minimum="0" Maximum="50" VerticalAlignment="Center" ValueChanged="SliderXPos_ValueChanged" />
+                <Label Grid.Column="2" x:Name="XPosValue" Content="{Binding Value, ElementName=SliderXPos}" HorizontalContentAlignment="Right" HorizontalAlignment="Center"/>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="7*" />
+                    <ColumnDefinition Width="9*"/>
+                    <ColumnDefinition Width="48*" />
+                    <ColumnDefinition Width="16*" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.ColumnSpan="2">Y position</Label>
+                <Slider IsSnapToTickEnabled="True" TickFrequency="1" Grid.Column="2"  x:Name="SliderYPos" Margin="5,0,5,0" Minimum="0" Maximum="50" VerticalAlignment="Center" ValueChanged="SliderYPos_ValueChanged" />
+                <Label Grid.Column="3" x:Name="YPosValue" Content="{Binding Value, ElementName=SliderYPos}" HorizontalContentAlignment="Right" HorizontalAlignment="Center"/>
+            </Grid>
+            <Button Click="Button_Click" Width="124">Save Image</Button>
+        </StackPanel>
+
+
+
+    </Grid>
+</Window>
